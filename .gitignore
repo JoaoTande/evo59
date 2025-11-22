@@ -1,0 +1,10 @@
+lifeGame
+*.o
+debug 
+bin
+obj
+codeblocks/bin*
+codeblocks/obj*
+!codeblocks/*.layout
+!codeblocks/*.depend
+SavedGame.*
