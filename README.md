@@ -1,4 +1,4 @@
-# lifegame
+# Evo59
 
 --------------------------------------------
 How to install allegro on Ubuntu
@@ -13,7 +13,7 @@ sudo apt-get update
 sudo apt-get install liballegro5-dev
 
 --------------------------------------------
-How to compile lifeGame
+How to compile Evo59
 --------------------------------------------
 
 run the command:
@@ -24,7 +24,7 @@ How to play it?
 --------------------------------------------
 
 at the first time run the command:
-chmod 777 lifeGame
+chmod 777 Evo59
 
 After that just run the command:
-./lifeGame
+./evo59
