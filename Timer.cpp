@@ -25,9 +25,13 @@ void Timer::pause() {
 }
 
 void Timer::stop() {
+    if (running && !paused) {
+        auto now = Clock::now();
+        accumulated += std::chrono::duration<float>(now - startTime).count();
+    }
+    
     running = false;
     paused = false;
-    accumulated = 0.0f;
 }
 
 void Timer::reset() {

@@ -171,6 +171,7 @@ private:
 	ALLEGRO_COLOR Color_white;
 	ALLEGRO_COLOR Color_grey;
 
+	myButton* buttonPlay;
 	myButton* buttonReset;
 	myButton* buttonRestore;
 	myButton* buttonFunPatterns;
@@ -254,6 +255,9 @@ public:
 	void draw_square_batch(ALLEGRO_VERTEX *buffer, int vertex_count);
 	virtual void draw();
 	virtual void update_input(ALLEGRO_EVENT *e);
+
+	void deleteAllThing();
+	void createNewThings();
 
 
 };

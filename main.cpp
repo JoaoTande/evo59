@@ -179,7 +179,7 @@ int main()
 	bigTextLabel<int> text1(50,50);
 	bigTextLabel<int> textGenerations(320,135);
 	bigTextLabel<int> textFPS(320,120);
-	bigTextLabel<float> timeRunning(420, 120);
+	bigTextLabel<float> timeRunning(440, 120);
 	myInformationPanel infoAbout(200,200,450,270);
 
 	aboutButton.setPressedAlwaysTrue();

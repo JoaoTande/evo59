@@ -49,7 +49,7 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
     	things.push_back(t);   // agora o vetor guarda ponteiros
 	}
 
-	TimeDuration.setPeriod(30.0f);
+	TimeDuration.setPeriod(60.0f);
 
    //------------------------------------------------------
 	ALLEGRO_MOUSE_STATE state;
@@ -72,6 +72,7 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
 
 	text_font = al_create_builtin_font();
 
+	buttonPlay = nullptr;
 	buttonReset = nullptr;
 	buttonRestore = nullptr;
 	buttonFunPatterns = nullptr;
@@ -167,7 +168,8 @@ void hall::draw_markers(){
 void hall::resetAll(bool){
 	if(!play){
 		generationNumber = 0;
-		
+		deleteAllThing();
+		createNewThings();
 	}
 }
 
@@ -184,6 +186,38 @@ void hall::makeScreenBackup(){
 void hall::restoreScreenBackup(bool){
 	if(!play){
 		
+	}
+}
+
+void hall::deleteAllThing(){
+	personas.clear();
+	things.clear();
+
+	for(int i = 0;i<int(Thing::all.size());i++){
+			delete Thing::all[i];
+	}
+	Thing::all.clear();
+}
+
+void hall::createNewThings(){
+	//personas.reserve(NumberOfPersonas);
+	for (int i = 0; i < NumberOfPersonas; i++) {
+	    	Persona* p = new Persona(
+        	float(rand() % int(Thing::sizeX_Hall)),
+        	float(rand() % int(Thing::sizeY_Hall)),
+        	2.0f + (4.0f * (rand() / float(RAND_MAX))),
+        	2.0f + (4.0f * (rand() / float(RAND_MAX)))
+    	);
+    	personas.push_back(p);   // agora o vetor guarda ponteiros
+	}
+
+	//things.reserve(NumberOfThings);
+	for (int i = 0; i < NumberOfThings; i++) {
+	    Thing* t = new Thing(
+        	float(rand() % int(Thing::sizeX_Hall)),
+        	float(rand() % int(Thing::sizeY_Hall))
+    	);
+    	things.push_back(t);   // agora o vetor guarda ponteiros
 	}
 }
 
@@ -343,6 +377,8 @@ void hall::update(){
 
 	if(TimeDuration.isFinished()){
 		play = false;
+		TimeDuration.stop();
+		buttonPlay->toogle();
 	}
 }
 
@@ -648,10 +684,13 @@ void hall::FuncCallBack(bool pressed){
 	play = pressed;
 	if (play){
 		TimeDuration.start();
+	} else{
+		TimeDuration.stop();
 	}
 }
 
 void hall::setButtonCallBack(myButton &b1){
+	buttonPlay = &b1;
 	funcCallBack f1 = &myButtonCallBack::FuncCallBack;
 	b1.registerCallBack(this, f1);
 }
