@@ -167,7 +167,7 @@ int main()
 	myButton resetButton(680, 40, 100, 100);
 	myButton restoreButton(800, 40, 100, 100);
 	myButton funButton(910, 40, 100, 45);
-	myButton fillRand(910, 95, 100, 45);
+	//myButton fillRand(910, 95, 100, 45);
 	myButton saveButton(1020, 40, 100, 100);
 	myButton loadButton(1130, 40, 100, 100);
 	myButton prevSpeedButton(230,110,32,32);
@@ -179,6 +179,7 @@ int main()
 	bigTextLabel<int> text1(50,50);
 	bigTextLabel<int> textGenerations(320,135);
 	bigTextLabel<int> textFPS(320,120);
+	bigTextLabel<float> timeRunning(420, 120);
 	myInformationPanel infoAbout(200,200,450,270);
 
 	aboutButton.setPressedAlwaysTrue();
@@ -205,10 +206,6 @@ int main()
 	funButton.set_sprite1("pictures//fun.png");
 	funButton.set_sprite2("pictures//fun.png");
 	funButton.set_description("Generates fun patterns");
-
-	fillRand.set_sprite1("pictures//fill.png");
-	fillRand.set_sprite2("pictures//fill.png");
-	fillRand.set_description("Fill the screen randomly");
 
 	saveButton.set_sprite1("pictures//save.png");
 	saveButton.set_sprite2("pictures//save.png");
@@ -242,13 +239,13 @@ int main()
 	hall1.setButtonCallBack_Reset(resetButton);
 	hall1.setButtonCallBack_Restore(restoreButton);
     hall1.setButtonCallBack_FunPatterns(funButton);
-	hall1.setButtonCallBack_FillRand(fillRand);
     hall1.setButtonCallBack_SaveFile(saveButton);
 	hall1.setButtonCallBack_LoadFile(loadButton);
     hall1.setButtonCallBack_PrevSpeed(prevSpeedButton);
     hall1.setButtonCallBack_NextSpeed(nextSpeedButton);
     hall1.setTextGenerations(textGenerations);
 	hall1.setTextFPS(textFPS);
+	hall1.setTexttimeRunning(timeRunning);
     hall1.setButtonCallBack_Zoom(lessZoomButton);
     hall1.setButtonCallBack_Zoom(moreZoomButton);
 
@@ -259,7 +256,6 @@ int main()
 	gameMainScreen.insertComponent(&resetButton);
 	gameMainScreen.insertComponent(&restoreButton);
 	gameMainScreen.insertComponent(&saveButton);
-	gameMainScreen.insertComponent(&fillRand);
 	gameMainScreen.insertComponent(&funButton);
 	gameMainScreen.insertComponent(&loadButton);
 	gameMainScreen.insertComponent(&prevSpeedButton);
@@ -267,6 +263,7 @@ int main()
 	gameMainScreen.insertComponent(&text1);
 	gameMainScreen.insertComponent(&textGenerations);
 	gameMainScreen.insertComponent(&textFPS);
+	gameMainScreen.insertComponent(&timeRunning);
 	gameMainScreen.insertComponent(&infoAbout);
 	gameMainScreen.insertComponent(&lessZoomButton);
 	gameMainScreen.insertComponent(&moreZoomButton);

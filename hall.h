@@ -17,6 +17,7 @@
 #include "FPSCounter.h"
 #include "Thing.h"
 #include "Persona.h"
+#include "Timer.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -147,11 +148,19 @@ private:
 	Quadrado** QuadradosList;
 	Quadrado** QuadradosListBackup;
 
+	// EVO59 ----------------------------------------------
+
 	int NumberOfPersonas;
 	std::vector<Persona*> personas;
 
 	int NumberOfThings;
 	std::vector<Thing*> things;
+
+	Timer TimeDuration;
+	float timeInSeconds;
+
+	// EVO59 ----------------------------------------------
+
 
 	int keys[7];
 	int FPS_Count;
@@ -213,13 +222,11 @@ public:
 	int readFile(const std::string file);
 
 	bool randGenerator();
-	void fillRandomGrid();
 
 	Position get_Position(int pos_x, int pos_y);
 	void setTextGenerations(bigTextLabel<int> &t1);
 	void setTextFPS(bigTextLabel<int> &t1);
-	int contNeighbors(int x, int y);
-	void contAllNeighbors();
+	void setTexttimeRunning(bigTextLabel<float> &t1);
 	void calcNewBlocZeroZero(int pos_x, int pos_y, int nextSize);
 	void CreateAndKillLife();
 
@@ -237,7 +244,6 @@ public:
 	//CallBack Pointer Functions
 	void restoreScreenBackup(bool);
 	void loadFunPatterns(bool);
-	void fillRand(bool);
 	void FuncCallBack(bool);
 	void resetAll(bool);
 	void saveFile(bool);

@@ -27,6 +27,7 @@ SOURCES = \
     FPSCounter.cpp \
 	Thing.cpp \
 	Persona.cpp \
+	Timer.cpp \
     informationPanel.cpp \
     main.cpp
 

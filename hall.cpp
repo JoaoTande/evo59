@@ -24,8 +24,10 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
 	Thing::hall_x0 = x0;
 	Thing::hall_y0 = y0;
 
-	NumberOfPersonas = 5;
-	NumberOfThings = 400;
+	NumberOfPersonas = 8;
+	NumberOfThings = 800;
+
+	timeInSeconds = 0.0f;
 
 	personas.reserve(NumberOfPersonas);
 	for (int i = 0; i < NumberOfPersonas; i++) {
@@ -46,6 +48,8 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
     	);
     	things.push_back(t);   // agora o vetor guarda ponteiros
 	}
+
+	TimeDuration.setPeriod(30.0f);
 
    //------------------------------------------------------
 	ALLEGRO_MOUSE_STATE state;
@@ -163,11 +167,7 @@ void hall::draw_markers(){
 void hall::resetAll(bool){
 	if(!play){
 		generationNumber = 0;
-		for(int i = 0;i<numero_x;i++){
-			for(int j = 0;j<numero_y;j++){
-				QuadradosList[i][j].checked = false;
-			}
-		}
+		
 	}
 }
 
@@ -177,33 +177,13 @@ bool hall::randGenerator()
   return (g % 2); // 1 is converted to true and 0 as false
 }
 
-
-void hall::fillRandomGrid(){
-	if(!play){
-		generationNumber = 0;
-		for(int i = 0;i<numero_x;i++){
-			for(int j = 0;j<numero_y;j++){
-				QuadradosList[i][j].checked = randGenerator();
-			}
-		}
-	}
-}
-
 void hall::makeScreenBackup(){
-	for(int i = 0;i<numero_x;i++){
-		for(int j = 0;j<numero_y;j++){
-			QuadradosListBackup[i][j].checked = QuadradosList[i][j].checked;
-		}
-	}
+	
 }
 
 void hall::restoreScreenBackup(bool){
 	if(!play){
-		for(int i = 0;i<numero_x;i++){
-			for(int j = 0;j<numero_y;j++){
-				QuadradosList[i][j].checked = QuadradosListBackup[i][j].checked;
-			}
-		}
+		
 	}
 }
 
@@ -226,9 +206,9 @@ void hall::setButtonCallBack_FunPatterns(myButton &b1){
 }
 
 void hall::setButtonCallBack_FillRand(myButton &b1){
-	buttonFillRand = &b1;
-	funcCallBack f1 = &myButtonCallBack::fillRand;
-	b1.registerCallBack(this, f1);
+	//buttonFillRand = &b1;
+	//funcCallBack f1 = &myButtonCallBack::fillRand;
+	//b1.registerCallBack(this, f1);
 }
 
 void hall::setButtonCallBack_SaveFile(myButton &b1){
@@ -264,6 +244,10 @@ void hall::setTextGenerations(bigTextLabel<int> &t1){
 
 void hall::setTextFPS(bigTextLabel<int> &t1){
 	t1.insertText("%d FPS", &FPS_Count);
+}
+
+void hall::setTexttimeRunning(bigTextLabel<float> &t1){
+	t1.insertText("Timer = %.1f", &timeInSeconds);
 }
 
 void hall::saveFile(bool){
@@ -338,11 +322,9 @@ void hall::CreateAndKillLife(){
 		double CurrentTimer = (al_get_timer_count(this->timer) / ev_speed[actual_speed].div);
         if(CurrentTimer >= evolution_speed){
         	generationNumber++;
-        	for(int i = 0;i<numero_x;i++){
-                for(int j = 0;j<numero_y;j++){
-                    QuadradosList[i][j].checkNeighbors();
-                }
-            }
+        	//ADD code here ---------------------------------------------
+
+			//ADD code here ---------------------------------------------
             evolution_speed = (al_get_timer_count(this->timer) / ev_speed[actual_speed].div)+ev_speed[actual_speed].speed;
         }
 	}
@@ -350,6 +332,18 @@ void hall::CreateAndKillLife(){
 
 void hall::update(){
 	moveGrid();
+	if(play && ev_speed[actual_speed].type != SPEED_STOPPED){
+		for (Thing* t : Thing::all) {
+			t->update();
+		}
+		Thing::cleanAllUnused();
+	}
+
+	timeInSeconds = TimeDuration.getDuration();
+
+	if(TimeDuration.isFinished()){
+		play = false;
+	}
 }
 
 void hall::draw(){
@@ -359,15 +353,9 @@ void hall::draw(){
 	draw_markers();
 	draw_text();
 
-
-	
 	for (Thing* t : Thing::all) {
-		if(play && ev_speed[actual_speed].type != SPEED_STOPPED){
-			t->update();
-		}
 		t->draw();
 	}
-	Thing::cleanAllUnused();
 
 	//----------------------------- FPS calc -----------------------------
 	fpsCounter.frameRendered();
@@ -393,19 +381,7 @@ void hall::draw_square_batch(ALLEGRO_VERTEX *buffer, int vertex_count)
 }
 
 void hall::setQuadradoInf(){
-	for(int i = 0;i<numero_x;i++){
-		for(int j = 0;j<numero_y;j++){
-			if((i >= bloco_x0)&&(i < (bloco_x0+numBloc_X))&&(j >= bloco_y0)&&(j < (bloco_y0+numBloc_Y))){
-				QuadradosList[i][j].size = size;
-				QuadradosList[i][j].x = x0 + size*(i-bloco_x0);
-				QuadradosList[i][j].y = y0 + size*(j-bloco_y0);
-			}else{
-				QuadradosList[i][j].size = 0;
-				QuadradosList[i][j].x = -1;
-				QuadradosList[i][j].y = -1;
-			}
-		}
-	}
+	
 	setThingsInf();
 }
 
@@ -415,57 +391,6 @@ void hall::setThingsInf(){
 	Thing::y0_global = static_cast<float>(bloco_y0);
 	Thing::x_global = static_cast<float>(numBloc_X);
 	Thing::y_global = static_cast<float>(numBloc_Y);
-}
-
-
-int hall::contNeighbors(int x, int y){
-	int count = 0;
-
-	if(x > 0){
-		if(QuadradosList[x-1][y].checked){
-			count++;
-		}
-		if((y > 0)&&(QuadradosList[x-1][y-1].checked)){
-			count++;
-		}
-		if((y < numero_y-1)&&(QuadradosList[x-1][y+1].checked)){
-			count++;
-		}
-	}
-
-	if(x < numero_x-1){
-		if(QuadradosList[x+1][y].checked){
-			count++;
-		}
-		if((y > 0)&&(QuadradosList[x+1][y-1].checked)){
-			count++;
-		}
-		if((y < numero_y-1)&&(QuadradosList[x+1][y+1].checked)){
-			count++;
-		}
-	}
-
-	if(y > 0){
-		if(QuadradosList[x][y-1].checked){
-			count++;
-		}
-	}
-
-	if(y < numero_y-1){
-		if(QuadradosList[x][y+1].checked){
-			count++;
-		}
-	}
-
-	return count;
-}
-
-void hall::contAllNeighbors(){
-	for(int i = 0;i<numero_x;i++){
-		for(int j = 0;j<numero_y;j++){
-			QuadradosList[i][j].number_of_neighbors = contNeighbors(i,j);
-		}
-	}
 }
 
 Position hall::get_Position(int pos_x, int pos_y){
@@ -663,14 +588,10 @@ void hall::calcNewBlocZeroZero(int pos_x, int pos_y, int nextSize){
 	}
 }
 
-void  hall::fillRand(bool){
-	fillRandomGrid();
-}
-
 void hall::loadFunPatterns(bool){
 
 	if(false){ // Speed up if I want to change the loadFunPatterns button action. True Random, False Fun.
-		fillRandomGrid(); //Generates a grid with random filled units
+
 	} else {
 		if(!play){
 
@@ -723,10 +644,11 @@ void hall::FuncCallBack(bool pressed){
 	buttonFunPatterns->setVisible(!pressed);
 	buttonSaveFile->setVisible(!pressed);
 	buttonLoadFile->setVisible(!pressed);
-	buttonFillRand->setVisible(!pressed);	
 
-	if(pressed == true)makeScreenBackup();
 	play = pressed;
+	if (play){
+		TimeDuration.start();
+	}
 }
 
 void hall::setButtonCallBack(myButton &b1){
