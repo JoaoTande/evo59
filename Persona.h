@@ -15,6 +15,7 @@ public:
 
     Persona(float x , float y, float direction, float speed);
     Persona(float x, float y, float direction);
+    Persona(float x, float y, float direction, DNA64 kidDNA);
 
     virtual ~Persona();
 

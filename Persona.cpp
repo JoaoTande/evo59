@@ -31,6 +31,16 @@ Persona::Persona(float x, float y, float direction, float speed)
         beingDetected = 0;
     }
 
+Persona::Persona(float x, float y, float direction, DNA64 kidDNA)
+    : Thing(x, y), direction(direction), PersonaDNA(kidDNA.getBits()) {
+        Color = PersonaDNA.getColor();
+        rangeDetection = PersonaDNA.getRange();
+        speed = PersonaDNA.getSpeed();
+        ThingType = Thing::Type::Persona;
+        food = 0;
+        beingDetected = 0;
+}
+
 Persona::~Persona(){}
 
 void Persona::set(float x, float y, float direction, float speed)

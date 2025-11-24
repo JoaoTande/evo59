@@ -1,6 +1,7 @@
 #include "hall.h"
 #include <cstdio>
 #include <cstdlib>
+#include <random>
 
 hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
 	x0 = x;
@@ -24,8 +25,8 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
 	Thing::hall_x0 = x0;
 	Thing::hall_y0 = y0;
 
-	NumberOfPersonas = 8;
-	NumberOfThings = 800;
+	NumberOfPersonas = 3;
+	NumberOfThings = 100;
 
 	timeInSeconds = 0.0f;
 
@@ -35,7 +36,7 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
         	float(rand() % int(Thing::sizeX_Hall)),
         	float(rand() % int(Thing::sizeY_Hall)),
         	2.0f + (4.0f * (rand() / float(RAND_MAX)))
-    	);
+    		);
     	personas.push_back(p);   // agora o vetor guarda ponteiros
 	}
 
@@ -169,6 +170,7 @@ void hall::resetAll(bool){
 		generationNumber = 0;
 		deleteAllThing();
 		createNewThings();
+		createNewPersonas();
 	}
 }
 
@@ -184,7 +186,7 @@ void hall::makeScreenBackup(){
 
 void hall::restoreScreenBackup(bool){
 	if(!play){
-		
+		createNewGeneration(false, 20, 5, 2);
 	}
 }
 
@@ -199,6 +201,17 @@ void hall::deleteAllThing(){
 }
 
 void hall::createNewThings(){
+	//things.reserve(NumberOfThings);
+	for (int i = 0; i < NumberOfThings; i++) {
+	    Thing* t = new Thing(
+        	float(rand() % int(Thing::sizeX_Hall)),
+        	float(rand() % int(Thing::sizeY_Hall))
+    	);
+    	things.push_back(t);   // agora o vetor guarda ponteiros
+	}
+}
+
+void hall::createNewPersonas(){
 	//personas.reserve(NumberOfPersonas);
 	for (int i = 0; i < NumberOfPersonas; i++) {
 	    	Persona* p = new Persona(
@@ -209,15 +222,111 @@ void hall::createNewThings(){
     	);
     	personas.push_back(p);   // agora o vetor guarda ponteiros
 	}
+}
 
-	//things.reserve(NumberOfThings);
-	for (int i = 0; i < NumberOfThings; i++) {
-	    Thing* t = new Thing(
-        	float(rand() % int(Thing::sizeX_Hall)),
-        	float(rand() % int(Thing::sizeY_Hall))
-    	);
-    	things.push_back(t);   // agora o vetor guarda ponteiros
+void hall::createNewGeneration(bool keepParents, int foodToSurvive, int foodPerKid, int maximumKids){
+	int alive = cleanDeadPersona(foodToSurvive);
+	
+	cleanDeadPersonaForAllVector(foodToSurvive);
+	cleanAllThingsFromAllVector();
+	createNewThings();
+
+	if (alive <= 1) return;// No one to reproduce.
+
+	std::vector<Persona*> kidsVector;
+	reproduce(kidsVector, foodToSurvive, foodPerKid, maximumKids);
+	personas.insert(personas.end(), kidsVector.begin(), kidsVector.end());
+
+	generationNumber++;
+	
+	if(!keepParents){
+		cleanParentsFromAllVector();
 	}
+}
+
+void hall::reproduce(std::vector<Persona*> &kidsVector, int foodToSurvive, int foodPerKid, int maximumKids){
+	for(int i = 0;i<int(personas.size());i++){
+		int totalfood = personas[i]->food;
+		if((totalfood - foodToSurvive) >= foodPerKid){
+			int numberOfKids = (totalfood - foodToSurvive)/foodPerKid;
+			if(numberOfKids > maximumKids) numberOfKids = maximumKids;
+			createKids(kidsVector, personas[i], numberOfKids);
+		}
+	}
+}
+
+void hall::createKids(std::vector<Persona*> &kidsVector, Persona* father, int numberOfKids){
+	for(int i = 0;i<numberOfKids;i++){
+		Persona* mother = getRandomPersona(father);
+		Persona* kid = new Persona(
+        	float(rand() % int(Thing::sizeX_Hall)),
+        	float(rand() % int(Thing::sizeY_Hall)),
+        	2.0f + (4.0f * (rand() / float(RAND_MAX))),
+			father->PersonaDNA.crossover(mother->PersonaDNA)
+    		);
+		kidsVector.push_back(kid);
+	}
+}
+
+int hall::cleanDeadPersona(int foodToSurvive){
+	for(int i = int(personas.size())-1;i>=0;i--){
+		if(personas[i]->food <  foodToSurvive){
+			personas.erase(personas.begin() + i);
+		}
+	}
+	return int(personas.size()); // return number of personas alive
+}
+
+int hall::cleanDeadPersonaForAllVector(int foodToSurvive){
+	for(int i = int(Thing::all.size())-1;i>=0;i--){
+		if(Thing::all[i]->ThingType == Thing::Type::Persona){
+			if(dynamic_cast<Persona*>(Thing::all[i])->food < foodToSurvive){
+				delete Thing::all[i];
+				Thing::all.erase(Thing::all.begin() + i);
+			}
+		}
+	}
+	return int(Thing::all.size()); // return number of personas alive
+}
+
+void hall::cleanParentsFromAllVector(){
+	for(int i = int(Thing::all.size())-1;i>=0;i--){
+		if(Thing::all[i]->ThingType == Thing::Type::Persona){
+			if(dynamic_cast<Persona*>(Thing::all[i])->food > 0){
+				delete Thing::all[i];
+				Thing::all.erase(Thing::all.begin() + i);
+			}
+		}
+	}
+}
+
+void hall::cleanAllThingsFromAllVector(){
+	for(int i = int(Thing::all.size())-1;i>=0;i--){
+		if(Thing::all[i]->ThingType == Thing::Type::Thing){
+				delete Thing::all[i];
+				Thing::all.erase(Thing::all.begin() + i);
+		}
+	}
+}
+
+
+Persona* hall::getRandomPersona(Persona* ExcludeFather) {
+    int alive = personas.size();
+    if (alive <= 1)
+        return nullptr;   // não existe outra pessoa para escolher
+
+    static std::mt19937 rng(std::random_device{}());  // gerador de números
+
+    Persona* mother = nullptr;
+
+    do {
+        std::uniform_int_distribution<int> dist(0, alive - 1);  
+        int randomIndex = dist(rng);      // índice entre 0 e alive-1
+        mother = personas[randomIndex];
+    } 
+    while (mother == ExcludeFather);      // não permitir repetir
+
+    return mother;
 }
 
 void hall::setButtonCallBack_Reset(myButton &b1){
@@ -673,7 +782,6 @@ void hall::loadFunPatterns(bool){
 }
 
 void hall::FuncCallBack(bool pressed){
-	if(pressed)generationNumber = 0;
 	buttonReset->setVisible(!pressed);
 	buttonRestore->setVisible(!pressed);
 	buttonFunPatterns->setVisible(!pressed);

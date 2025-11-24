@@ -258,6 +258,17 @@ public:
 
 	void deleteAllThing();
 	void createNewThings();
+	void createNewPersonas();
+
+	void createNewGeneration(bool keepParents = false, int foodToSurvive = 2, int foodPerKid = 3, int maximumKids = 4);
+	void reproduce(std::vector<Persona*> &kidsVector, int foodToSurvive = 2, int foodPerKid = 3, int maximumKids = 4);
+	void createKids(std::vector<Persona*> &kidsVector, Persona* father, int numberOfKids);
+	int cleanDeadPersona(int foodSurvival);
+	int cleanDeadPersonaForAllVector(int foodToSurvive);
+	void cleanAllThingsFromAllVector();
+	void cleanParentsFromAllVector();
+	
+	Persona* getRandomPersona(Persona* ExcludeFather);
 
 
 };

@@ -199,8 +199,8 @@ int main()
 	resetButton.set_sprite2("pictures//reset.png");
 	resetButton.set_description("Clears all the grid");
 
-	restoreButton.set_sprite1("pictures//restore.png");
-	restoreButton.set_sprite2("pictures//restore.png");
+	restoreButton.set_sprite1("pictures//newgeneration.png");
+	restoreButton.set_sprite2("pictures//newgeneration.png");
     restoreButton.set_description("Restore the last grid");
 
 	funButton.set_sprite1("pictures//fun.png");
