@@ -1,16 +1,20 @@
 #pragma once
 #include "Thing.h"
+#include "DNA64.h"
 
 class Persona : public Thing {
 public:
     float direction;  // em radianos
+    
+    DNA64 PersonaDNA;
     float speed;
     float rangeDetection;
 
     int food;
     int beingDetected;
 
-    Persona(float x = 0, float y = 0, float direction = 0, float speed = 1.0f);
+    Persona(float x , float y, float direction, float speed);
+    Persona(float x, float y, float direction);
 
     virtual ~Persona();
 

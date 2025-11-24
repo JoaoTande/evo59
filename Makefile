@@ -28,6 +28,7 @@ SOURCES = \
 	Thing.cpp \
 	Persona.cpp \
 	Timer.cpp \
+	DNA64.cpp \
     informationPanel.cpp \
     main.cpp
 

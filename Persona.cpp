@@ -9,6 +9,16 @@
 
 extern ALLEGRO_FONT* defaultFont;
 
+Persona::Persona(float x, float y, float direction)
+    : Thing(x, y), direction(direction), PersonaDNA() {
+        Color = PersonaDNA.getColor();
+        rangeDetection = PersonaDNA.getRange();
+        speed = PersonaDNA.getSpeed();
+        ThingType = Thing::Type::Persona;
+        food = 0;
+        beingDetected = 0;
+    }
+
 Persona::Persona(float x, float y, float direction, float speed)
     : Thing(x, y), direction(direction), speed(speed) {
         int a = (rand() % 255);

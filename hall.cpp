@@ -34,7 +34,6 @@ hall::hall(int x, int y, int screen_Wj, int screen_Hj) : interfaceComponent() {
 	    	Persona* p = new Persona(
         	float(rand() % int(Thing::sizeX_Hall)),
         	float(rand() % int(Thing::sizeY_Hall)),
-        	2.0f + (4.0f * (rand() / float(RAND_MAX))),
         	2.0f + (4.0f * (rand() / float(RAND_MAX)))
     	);
     	personas.push_back(p);   // agora o vetor guarda ponteiros
